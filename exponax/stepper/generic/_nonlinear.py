@@ -13,6 +13,7 @@ class GeneralNonlinearStepper(BaseStepper):
     linear_coefficients: tuple[float, ...]
     nonlinear_coefficients: tuple[float, float, float]
     dealiasing_fraction: float
+    zero_mode_fix: bool
 
     def __init__(
         self,
@@ -25,6 +26,7 @@ class GeneralNonlinearStepper(BaseStepper):
         nonlinear_coefficients: tuple[float, float, float] = (0.0, -1.0, 0.0),
         order=2,
         dealiasing_fraction: float = 2 / 3,
+        zero_mode_fix: bool = True,
         num_circle_points: int = 16,
         circle_radius: float = 1.0,
     ):
@@ -101,6 +103,13 @@ class GeneralNonlinearStepper(BaseStepper):
         - `dealiasing_fraction`: The fraction of the wavenumbers to keep before
             evaluating the nonlinearity. The default value `2/3` corresponds to
             Orszag's 2/3 rule. To fully eliminate aliasing, use 1/2.
+        - `zero_mode_fix`: Whether to set the zero mode to zero. In other words,
+            whether to have mean zero energy after nonlinear function activation.
+            This exists because the nonlinear operation happens after the
+            derivative operator is applied. Naturally, the derivative sets any
+            constant offset to zero. However, the square nonlinearity introduces
+            again a new constant offset. Setting this argument to `True` removes
+            this offset. Defaults to `True`.
         - `num_circle_points`: How many points to use in the complex contour
             integral method to compute the coefficients of the exponential time
             differencing Runge Kutta method.
@@ -114,6 +123,7 @@ class GeneralNonlinearStepper(BaseStepper):
         self.linear_coefficients = linear_coefficients
         self.nonlinear_coefficients = nonlinear_coefficients
         self.dealiasing_fraction = dealiasing_fraction
+        self.zero_mode_fix = zero_mode_fix
 
         super().__init__(
             num_spatial_dims=num_spatial_dims,
@@ -150,7 +160,7 @@ class GeneralNonlinearStepper(BaseStepper):
             derivative_operator=derivative_operator,
             dealiasing_fraction=self.dealiasing_fraction,
             scale_list=self.nonlinear_coefficients,
-            zero_mode_fix=True,  # TODO: check this
+            zero_mode_fix=self.zero_mode_fix,
         )
 
 
@@ -171,6 +181,7 @@ class NormalizedNonlinearStepper(GeneralNonlinearStepper):
         ),
         order=2,
         dealiasing_fraction: float = 2 / 3,
+        zero_mode_fix: bool = True,
         num_circle_points: int = 16,
         circle_radius: float = 1.0,
     ):
@@ -249,6 +260,13 @@ class NormalizedNonlinearStepper(GeneralNonlinearStepper):
         - `dealiasing_fraction`: The fraction of the wavenumbers to keep before
             evaluating the nonlinearity. The default value `2/3` corresponds to
             Orszag's 2/3 rule. To fully eliminate aliasing, use 1/2.
+        - `zero_mode_fix`: Whether to set the zero mode to zero. In other words,
+            whether to have mean zero energy after nonlinear function activation.
+            This exists because the nonlinear operation happens after the
+            derivative operator is applied. Naturally, the derivative sets any
+            constant offset to zero. However, the square nonlinearity introduces
+            again a new constant offset. Setting this argument to `True` removes
+            this offset. Defaults to `True`.
         - `num_circle_points`: How many points to use in the complex contour
             integral method to compute the coefficients of the exponential time
             differencing Runge Kutta method.
@@ -268,6 +286,7 @@ class NormalizedNonlinearStepper(GeneralNonlinearStepper):
             nonlinear_coefficients=normalized_nonlinear_coefficients,
             order=order,
             dealiasing_fraction=dealiasing_fraction,
+            zero_mode_fix=zero_mode_fix,
             num_circle_points=num_circle_points,
             circle_radius=circle_radius,
         )
@@ -295,6 +314,7 @@ class DifficultyNonlinearStepper(NormalizedNonlinearStepper):
         maximum_absolute: float = 1.0,
         order: int = 2,
         dealiasing_fraction: float = 2 / 3,
+        zero_mode_fix: bool = True,
         num_circle_points: int = 16,
         circle_radius: float = 1.0,
     ):
@@ -366,6 +386,13 @@ class DifficultyNonlinearStepper(NormalizedNonlinearStepper):
         - `dealiasing_fraction`: The fraction of the wavenumbers to keep before
             evaluating the nonlinearity. The default value `2/3` corresponds to
             Orszag's 2/3 rule. To fully eliminate aliasing, use 1/2.
+        - `zero_mode_fix`: Whether to set the zero mode to zero. In other words,
+            whether to have mean zero energy after nonlinear function activation.
+            This exists because the nonlinear operation happens after the
+            derivative operator is applied. Naturally, the derivative sets any
+            constant offset to zero. However, the square nonlinearity introduces
+            again a new constant offset. Setting this argument to `True` removes
+            this offset. Defaults to `True`.
         - `num_circle_points`: How many points to use in the complex contour
             integral method to compute the coefficients of the exponential time
             differencing Runge Kutta method.
@@ -398,6 +425,7 @@ class DifficultyNonlinearStepper(NormalizedNonlinearStepper):
             normalized_nonlinear_coefficients=normalized_coefficients_nonlinear,
             order=order,
             dealiasing_fraction=dealiasing_fraction,
+            zero_mode_fix=zero_mode_fix,
             num_circle_points=num_circle_points,
             circle_radius=circle_radius,
         )
