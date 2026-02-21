@@ -217,18 +217,6 @@ def test_sobolev_vs_manual(num_spatial_dims, metric_fn_name):
     )
 
 
-# # Below always evaluates to 2 * pi no matter the values of k and l
-# def analytical_L2_diff_norm(k: int, l:int):
-#     term1 = 2 * jnp.pi
-#     term2 = -jnp.sin(4 * k * jnp.pi) / (4 * k)
-#     term3 = (2 * (-(
-#         l * jnp.cos(2 * l * jnp.pi) * jnp.sin(2 * k * jnp.pi)
-#         ) + k * jnp.cos(2 * k * jnp.pi) * jnp.sin(2 * l * jnp.pi))
-#     ) / (k**2 - l**2)
-#     term4 = -jnp.sin(4 * l * jnp.pi) / (4 * l)
-
-#     result = term1 + term2 + term3 + term4
-#     return result
 
 
 @pytest.mark.parametrize("wavenumber_k,wavenumber_l", [(1, 2), (2, 1), (3, 4)])
@@ -241,9 +229,6 @@ def test_analytical_solution_1d(wavenumber_k: int, wavenumber_l: int):
     u_0 = jnp.sin(wavenumber_k * grid)
     u_1 = jnp.sin(wavenumber_l * grid)
 
-    # assert ex.metrics.MSE(u_1, u_0, domain_extent=DOMAIN_EXTENT) == pytest.approx(
-    #     analytical_L2_diff_norm(k, l)
-    # )
     assert ex.metrics.MSE(u_1, u_0, domain_extent=DOMAIN_EXTENT) == pytest.approx(
         2 * jnp.pi
     )
