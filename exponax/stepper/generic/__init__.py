@@ -11,7 +11,6 @@ from ._gradient_norm import (
 from ._linear import (
     DifficultyLinearStepper,
     DifficultyLinearStepperSimple,
-    DiffultyLinearStepperSimple,
     GeneralLinearStepper,
     NormalizedLinearStepper,
 )
@@ -61,7 +60,6 @@ __all__ = [
     "NormalizedNonlinearStepper",
     "DifficultyNonlinearStepper",
     "DifficultyLinearStepperSimple",
-    "DiffultyLinearStepperSimple",  # Deprecated alias
     "denormalize_coefficients",
     "denormalize_convection_scale",
     "denormalize_gradient_norm_scale",

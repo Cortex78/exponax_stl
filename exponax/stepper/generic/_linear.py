@@ -328,12 +328,3 @@ class DifficultyLinearStepperSimple(DifficultyLinearStepper):
         )
 
 
-def DiffultyLinearStepperSimple(*args, **kwargs):
-    """Deprecated: Use `DifficultyLinearStepperSimple` instead."""
-    warnings.warn(
-        "`DiffultyLinearStepperSimple` is deprecated due to a typo. "
-        "Use `DifficultyLinearStepperSimple` instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return DifficultyLinearStepperSimple(*args, **kwargs)
