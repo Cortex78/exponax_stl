@@ -1325,9 +1325,9 @@ class TestDifficultyStepperWrappers:
         assert u_1.shape == u_0.shape
         assert jnp.all(jnp.isfinite(u_1))
 
-    def test_diffully_linear_stepper_simple(self):
-        """DiffultyLinearStepperSimple (note: name has typo in source)."""
-        stepper = ex.stepper.generic.DiffultyLinearStepperSimple(
+    def test_difficulty_linear_stepper_simple(self):
+        """DifficultyLinearStepperSimple."""
+        stepper = ex.stepper.generic.DifficultyLinearStepperSimple(
             num_spatial_dims=1, num_points=32, difficulty=-2.0, order=1
         )
         u_0 = ex.ic.RandomTruncatedFourierSeries(1, cutoff=5)(
