@@ -1,3 +1,5 @@
+import warnings
+
 from jaxtyping import Array, Complex
 
 from .._base_stepper import BaseStepper
@@ -265,13 +267,12 @@ class KuramotoSivashinskyConservative(BaseStepper):
         self.dealiasing_fraction = dealiasing_fraction
 
         if num_spatial_dims > 1:
-            print(
-                """Warning: The KS equation in conservative format does not
-                generalize well to higher dimensions."""
-            )
-            print(
-                """Consider using the combustion format
-                (`exponax.stepper.KuramotoSivashinsky`) instead."""
+            warnings.warn(
+                "The KS equation in conservative format does not "
+                "generalize well to higher dimensions. "
+                "Consider using the combustion format "
+                "(`exponax.stepper.KuramotoSivashinsky`) instead.",
+                stacklevel=2,
             )
 
         # number of channels grow with the spatial dimension
