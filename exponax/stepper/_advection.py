@@ -72,9 +72,26 @@ class Advection(BaseStepper):
             `normalized_coefficients = [0, alpha_1]` with `alpha_1 = - velocity
             * dt / domain_extent`.
         """
-        # TODO: better checks on the desired type of velocity
-        if isinstance(velocity, float):
+        if num_spatial_dims not in {1, 2, 3}:
+            raise ValueError(
+                f"num_spatial_dims must be 1, 2, or 3, got {num_spatial_dims}"
+            )
+        if domain_extent <= 0:
+            raise ValueError(f"domain_extent must be positive, got {domain_extent}")
+        if num_points <= 0:
+            raise ValueError(f"num_points must be positive, got {num_points}")
+        if dt <= 0:
+            raise ValueError(f"dt must be positive, got {dt}")
+
+        velocity = jnp.asarray(velocity)
+        if velocity.ndim == 0:
             velocity = jnp.ones(num_spatial_dims) * velocity
+
+        if velocity.shape != (num_spatial_dims,):
+            raise ValueError(
+                f"velocity must have shape ({num_spatial_dims},) or be a scalar, "
+                f"got {velocity.shape}"
+            )
         self.velocity = velocity
         super().__init__(
             num_spatial_dims=num_spatial_dims,
