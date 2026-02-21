@@ -81,11 +81,45 @@ class Diffusion(BaseStepper):
             `normalized_coefficients = [0, 0, alpha_2]` with `alpha_2 =
             diffusivity * dt / domain_extent**2`.
         """
-        # TODO: more sophisticated checks here
-        if isinstance(diffusivity, float):
-            diffusivity = jnp.diag(jnp.ones(num_spatial_dims)) * diffusivity
-        elif len(diffusivity.shape) == 1:
+        if num_spatial_dims not in {1, 2, 3}:
+            raise ValueError(
+                f"num_spatial_dims must be 1, 2, or 3, got {num_spatial_dims}"
+            )
+        if domain_extent <= 0:
+            raise ValueError(f"domain_extent must be positive, got {domain_extent}")
+        if num_points <= 0:
+            raise ValueError(f"num_points must be positive, got {num_points}")
+        if dt <= 0:
+            raise ValueError(f"dt must be positive, got {dt}")
+
+        diffusivity = jnp.asarray(diffusivity)
+        if diffusivity.ndim == 0:
+            diffusivity = jnp.diag(jnp.ones(num_spatial_dims) * diffusivity)
+        elif diffusivity.ndim == 1:
+            if diffusivity.shape != (num_spatial_dims,):
+                raise ValueError(
+                    f"diffusivity as a vector must have shape ({num_spatial_dims},), "
+                    f"got {diffusivity.shape}"
+                )
             diffusivity = jnp.diag(diffusivity)
+        elif diffusivity.ndim == 2:
+            if diffusivity.shape != (num_spatial_dims, num_spatial_dims):
+                raise ValueError(
+                    f"diffusivity as a matrix must have shape ({num_spatial_dims}, "
+                    f"{num_spatial_dims}), got {diffusivity.shape}"
+                )
+            if not jnp.allclose(diffusivity, diffusivity.T):
+                raise ValueError("diffusivity matrix must be symmetric")
+            eigenvalues = jnp.linalg.eigvalsh(diffusivity)
+            if jnp.any(eigenvalues < 0):
+                raise ValueError(
+                    "diffusivity matrix must be positive semi-definite (all eigenvalues >= 0)"
+                )
+        else:
+            raise ValueError(
+                f"diffusivity must be a scalar, 1D array, or 2D array, "
+                f"got {diffusivity.ndim}D array"
+            )
         self.diffusivity = diffusivity
         super().__init__(
             num_spatial_dims=num_spatial_dims,
